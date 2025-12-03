@@ -1,0 +1,78 @@
+<div class="flex flex-col h-screen bg-gray-900 text-white font-sans">
+  <!-- Header -->
+  <header class="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700 p-4 shadow-lg sticky top-0 z-10">
+    <h1 class="text-xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+      Akin AI Chat
+    </h1>
+  </header>
+
+  <!-- Chat Messages -->
+  <main #chatContainer class="flex-grow p-6 overflow-y-auto space-y-6">
+    @for (message of messages(); track $index) {
+      <div class="flex" [class.justify-end]="message.role === 'user'" [class.justify-start]="message.role === 'model'">
+        <div class="flex items-start gap-3 max-w-2xl">
+          @if (message.role === 'model') {
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-robot text-white text-sm"></i>
+            </div>
+          }
+          <div 
+            class="rounded-lg p-4"
+            [class.bg-blue-600]="message.role === 'user'"
+            [class.text-white]="message.role === 'user'"
+            [class.bg-gray-700]="message.role === 'model'"
+            [class.text-gray-200]="message.role === 'model'">
+            @if (message.content) {
+              <p class="whitespace-pre-wrap">{{ message.content }}</p>
+            } @else if (isLoading() && $index === messages().length - 1) {
+              <div class="flex items-center space-x-1">
+                <span class="w-2 h-2 bg-gray-400 rounded-full animate-pulse [animation-delay:-0.3s]"></span>
+                <span class="w-2 h-2 bg-gray-400 rounded-full animate-pulse [animation-delay:-0.15s]"></span>
+                <span class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </main>
+  
+  @if (error()) {
+    <div class="px-6 pb-2">
+      <div class="bg-red-500/20 border border-red-500 text-red-300 px-4 py-3 rounded-lg relative" role="alert">
+        <strong class="font-bold">Oops! </strong>
+        <span class="block sm:inline">{{ error() }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Input Form -->
+  <footer class="bg-gray-800/70 backdrop-blur-sm border-t border-gray-700 p-4 sticky bottom-0">
+    <div class="max-w-3xl mx-auto">
+      <form (ngSubmit)="sendMessage()" class="flex items-center bg-gray-700 rounded-xl p-2">
+        <textarea
+          [(ngModel)]="userInput"
+          (keydown)="handleEnter($event)"
+          name="userInput"
+          placeholder="Type your message..."
+          rows="1"
+          class="flex-grow bg-transparent text-gray-200 placeholder-gray-400 focus:outline-none resize-none px-2 py-1 max-h-32"
+          [disabled]="isLoading()"
+        ></textarea>
+        <button
+          type="submit"
+          class="ml-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg w-10 h-10 flex items-center justify-center transition-colors flex-shrink-0"
+          [disabled]="isLoading() || !userInput()">
+          @if (isLoading()) {
+            <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          } @else {
+            <i class="fas fa-paper-plane text-white"></i>
+          }
+        </button>
+      </form>
+       <p class="text-center text-xs text-gray-500 pt-2">
+        Created by Akin S. Sokpah from Liberia 🇱🇷 | For deployment on Vercel
+      </p>
+    </div>
+  </footer>
+</div>
